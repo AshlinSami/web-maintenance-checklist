@@ -208,45 +208,7 @@
         </div>
 
         <div class="section">
-            <div class="section-header">2. WHM (WEB HOST MANAGER) REPORT</div>
-            <div class="section-content">
-                <div class="checkbox-item">
-                    <input type="checkbox" id="whm-generated">
-                    <label>WHM report generated and reviewed</label>
-                </div>
-                <div class="checkbox-item">
-                    <label>Report date/time:</label>
-                    <input type="datetime-local">
-                </div>
-                <div class="checkbox-item">
-                    <label>Server status:</label>
-                    <select>
-                        <option>Select status</option>
-                        <option>Normal</option>
-                        <option>Issues detected</option>
-                    </select>
-                </div>
-                <div class="checkbox-item">
-                    <label>Disk usage (%):</label>
-                    <input type="number" min="0" max="100">
-                </div>
-                <div class="checkbox-item">
-                    <label>Bandwidth usage (%):</label>
-                    <input type="number" min="0" max="100">
-                </div>
-                <div class="checkbox-item">
-                    <label>Alerts/warnings:</label>
-                    <input type="text" placeholder="Enter any alerts or warnings">
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="whm-attached">
-                    <label>WHM report file attached to task</label>
-                </div>
-            </div>
-        </div>
-
-        <div class="section">
-            <div class="section-header">3. PLUGIN MANAGEMENT</div>
+            <div class="section-header">2. PLUGIN MANAGEMENT</div>
             <div class="section-content">
                 <h4>Plugins Successfully Updated:</h4>
                 <div style="margin-bottom: 10px;">
@@ -256,7 +218,7 @@
                     <thead>
                         <tr>
                             <th>Plugin Name</th>
-                            <th>Previous Version</th>
+                            <th>Current Version</th>
                             <th>New Version</th>
                             <th>Update Status</th>
                         </tr>
@@ -295,7 +257,7 @@
         </div>
 
         <div class="section">
-            <div class="section-header">4. MONDAY TASK VERIFICATION</div>
+            <div class="section-header">3. MONDAY TASK VERIFICATION</div>
             <div class="section-content">
                 <div class="checkbox-item">
                     <input type="checkbox" id="monday-time">
@@ -314,7 +276,7 @@
         </div>
 
         <div class="section">
-            <div class="section-header">5. POST-MAINTENANCE VERIFICATION</div>
+            <div class="section-header">4. POST-MAINTENANCE VERIFICATION</div>
             <div class="section-content">
                 <div class="checkbox-item">
                     <input type="checkbox" id="homepage-loads">
@@ -348,7 +310,7 @@
         </div>
 
         <div class="section">
-            <div class="section-header">6. SECURITY</div>
+            <div class="section-header">5. SECURITY</div>
             <div class="section-content">
                 <div class="checkbox-item">
                     <input type="checkbox" id="security-plugin">
@@ -358,7 +320,7 @@
         </div>
 
         <div class="section">
-            <div class="section-header">7. DOCUMENTATION & REPORTING</div>
+            <div class="section-header">6. DOCUMENTATION & REPORTING</div>
             <div class="section-content">
                 <div class="checkbox-item">
                     <label>Total plugins updated:</label>
@@ -514,11 +476,6 @@
             summary += `- Backup created: ${document.getElementById('backup-created').checked ? '✅ Yes' : '❌ No'}\n`;
             summary += `- Integrity verified: ${document.getElementById('backup-integrity').checked ? '✅ Yes' : '❌ No'}\n\n`;
 
-            // WHM section
-            summary += `WHM REPORT:\n`;
-            summary += `- Report generated: ${document.getElementById('whm-generated').checked ? '✅ Yes' : '❌ No'}\n`;
-            summary += `- Report attached: ${document.getElementById('whm-attached').checked ? '✅ Yes' : '❌ No'}\n\n`;
-
             // Plugin updates
             const successTable = document.getElementById('success-table');
             const failureTable = document.getElementById('failure-table');
@@ -531,10 +488,10 @@
             successRows.forEach(row => {
                 const inputs = row.querySelectorAll('input[type="text"]');
                 const pluginName = inputs[0].value.trim();
-                const prevVersion = inputs[1].value.trim();
+                const currentVersion = inputs[1].value.trim();
                 const newVersion = inputs[2].value.trim();
                 if (pluginName) {
-                    updatedPlugins.push(`${pluginName} (${prevVersion} → ${newVersion})`);
+                    updatedPlugins.push(`${pluginName} (${currentVersion} → ${newVersion})`);
                 }
             });
             
