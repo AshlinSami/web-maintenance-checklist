@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Web Maintenance Checklist</title>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -361,13 +362,28 @@
 
         <div style="text-align: center; margin: 30px 0; padding: 20px; background-color: #f8f9fa; border-radius: 8px;">
             <h3 style="color: #2c5aa0; margin-bottom: 20px;">📄 SUBMIT COMPLETED CHECKLIST</h3>
+            <button onclick="submitToManagement()" style="background-color: #28a745; color: white; padding: 15px 30px; border: none; border-radius: 5px; margin: 5px; cursor: pointer; font-size: 18px; font-weight: bold;">📧 Submit to Management</button>
+            <br><br>
+            <p style="color: #666; font-size: 14px; margin-top: 10px;">This will automatically email the completed checklist to management</p>
+            <hr style="margin: 20px 0;">
             <button onclick="exportToPDF()" style="background-color: #dc3545; color: white; padding: 12px 24px; border: none; border-radius: 5px; margin: 5px; cursor: pointer; font-size: 16px;">📋 Save as PDF</button>
-            <button onclick="exportToEmail()" style="background-color: #28a745; color: white; padding: 12px 24px; border: none; border-radius: 5px; margin: 5px; cursor: pointer; font-size: 16px;">📧 Email Report</button>
-            <button onclick="copyToClipboard()" style="background-color: #17a2b8; color: white; padding: 12px 24px; border: none; border-radius: 5px; margin: 5px; cursor: pointer; font-size: 16px;">📋 Copy Summary</button>
+            <button onclick="exportToEmail()" style="background-color: #17a2b8; color: white; padding: 12px 24px; border: none; border-radius: 5px; margin: 5px; cursor: pointer; font-size: 16px;">📧 Manual Email</button>
+            <button onclick="copyToClipboard()" style="background-color: #6c757d; color: white; padding: 12px 24px; border: none; border-radius: 5px; margin: 5px; cursor: pointer; font-size: 16px;">📋 Copy Summary</button>
         </div>
     </div>
 
     <script>
+        // EmailJS Configuration - REPLACE THESE VALUES WITH YOUR ACTUAL EMAILJS DETAILS
+        const EMAILJS_PUBLIC_KEY = 'YOUR_PUBLIC_KEY_HERE';
+        const EMAILJS_SERVICE_ID = 'service_uug0tal';
+        const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID_HERE';
+        const MANAGEMENT_EMAIL = 'management@yourcompany.com'; // Replace with actual management email
+
+        // Initialize EmailJS
+        (function() {
+            emailjs.init(EMAILJS_PUBLIC_KEY);
+        })();
+
         // Set today's date as default
         document.getElementById('date').valueAsDate = new Date();
         
@@ -381,6 +397,195 @@
                 }
             });
         });
+
+        // Main function to submit to management via EmailJS
+        function submitToManagement() {
+            // Validate required fields
+            const specialist = document.getElementById('specialist').value;
+            const website = document.querySelector('input[placeholder="Enter website URL(s)"]').value;
+            
+            if (!specialist) {
+                alert('⚠️ Please select a specialist before submitting.');
+                return;
+            }
+            
+            if (!website.trim()) {
+                alert('⚠️ Please enter the website URL(s) before submitting.');
+                return;
+            }
+
+            // Show loading state
+            const submitBtn = event.target;
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '📤 Sending...';
+            submitBtn.disabled = true;
+
+            // Generate detailed summary for management
+            const emailContent = generateManagementSummary();
+            
+            // Prepare email parameters
+            const templateParams = {
+                name: specialist,
+                time: new Date().toLocaleString(),
+                message: emailContent
+            };
+
+            // Send email via EmailJS
+            emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
+                .then(function(response) {
+                    console.log('Email sent successfully!', response.status, response.text);
+                    
+                    // Update completed by and date
+                    document.getElementById('completed-by').value = specialist;
+                    document.getElementById('date-completed').valueAsDate = new Date();
+                    
+                    // Success notification
+                    submitBtn.innerHTML = '✅ Sent Successfully!';
+                    submitBtn.style.backgroundColor = '#28a745';
+                    
+                    alert('✅ Checklist successfully submitted to management!\n\n📧 Email sent to: ' + MANAGEMENT_EMAIL);
+                    
+                    // Reset button after 3 seconds
+                    setTimeout(() => {
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.style.backgroundColor = '#28a745';
+                        submitBtn.disabled = false;
+                    }, 3000);
+                    
+                }, function(error) {
+                    console.error('Failed to send email:', error);
+                    
+                    // Error notification
+                    submitBtn.innerHTML = '❌ Failed to Send';
+                    submitBtn.style.backgroundColor = '#dc3545';
+                    
+                    alert('❌ Failed to send email to management.\n\nError: ' + error.text + '\n\nPlease use the "Manual Email" option instead.');
+                    
+                    // Reset button after 3 seconds
+                    setTimeout(() => {
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.style.backgroundColor = '#28a745';
+                        submitBtn.disabled = false;
+                    }, 3000);
+                });
+        }
+
+        // Generate comprehensive summary for management email
+        function generateManagementSummary() {
+            const date = document.querySelector('input[type="date"]').value || 'Not specified';
+            const specialist = document.getElementById('specialist').value || 'Not specified';
+            const website = document.querySelector('input[placeholder="Enter website URL(s)"]').value || 'Not specified';
+            
+            let summary = `WEB MAINTENANCE CHECKLIST - COMPLETED\n`;
+            summary += `${'='.repeat(50)}\n\n`;
+            summary += `📅 Date: ${date}\n`;
+            summary += `👤 Specialist: ${specialist}\n`;
+            summary += `🌐 Website(s): ${website}\n`;
+            summary += `⏰ Submitted: ${new Date().toLocaleString()}\n\n`;
+
+            // Count completed tasks
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const totalTasks = checkboxes.length;
+            const completedTasks = Array.from(checkboxes).filter(cb => cb.checked).length;
+            const completionPercent = Math.round(completedTasks/totalTasks*100);
+            
+            summary += `📊 COMPLETION STATUS: ${completedTasks}/${totalTasks} tasks completed (${completionPercent}%)\n`;
+            if (completionPercent === 100) {
+                summary += `✅ ALL TASKS COMPLETED SUCCESSFULLY!\n\n`;
+            } else {
+                summary += `⚠️  ATTENTION: ${totalTasks - completedTasks} tasks incomplete\n\n`;
+            }
+
+            // Backup section
+            summary += `💾 BACKUP VERIFICATION:\n`;
+            summary += `   • Backup created: ${document.getElementById('backup-created').checked ? '✅ Yes' : '❌ No'}\n`;
+            summary += `   • Integrity verified: ${document.getElementById('backup-integrity').checked ? '✅ Yes' : '❌ No'}\n\n`;
+
+            // Plugin updates
+            const successTable = document.getElementById('success-table');
+            const failureTable = document.getElementById('failure-table');
+            
+            let updatedPlugins = [];
+            let issuePlugins = [];
+            
+            // Get successful updates
+            const successRows = successTable.querySelectorAll('tbody tr');
+            successRows.forEach(row => {
+                const inputs = row.querySelectorAll('input[type="text"]');
+                const pluginName = inputs[0].value.trim();
+                const currentVersion = inputs[1].value.trim();
+                const newVersion = inputs[2].value.trim();
+                if (pluginName) {
+                    updatedPlugins.push(`${pluginName} (${currentVersion} → ${newVersion})`);
+                }
+            });
+            
+            // Get failed updates
+            const failureRows = failureTable.querySelectorAll('tbody tr');
+            failureRows.forEach(row => {
+                const inputs = row.querySelectorAll('input[type="text"]');
+                const pluginName = inputs[0].value.trim();
+                const currentVersion = inputs[1].value.trim();
+                const reason = inputs[2].value.trim();
+                if (pluginName) {
+                    issuePlugins.push(`${pluginName} (${currentVersion}) - ${reason}`);
+                }
+            });
+
+            summary += `🔌 PLUGIN UPDATES:\n`;
+            summary += `   • Successfully updated: ${updatedPlugins.length}\n`;
+            if (updatedPlugins.length > 0) {
+                updatedPlugins.forEach(plugin => summary += `     - ${plugin}\n`);
+            }
+            summary += `   • Issues/Not updated: ${issuePlugins.length}\n`;
+            if (issuePlugins.length > 0) {
+                issuePlugins.forEach(plugin => summary += `     - ${plugin}\n`);
+            }
+            summary += `\n`;
+
+            // Monday tasks
+            summary += `📋 MONDAY TASK VERIFICATION:\n`;
+            summary += `   • Time logged: ${document.getElementById('monday-time').checked ? '✅ Yes' : '❌ No'}\n`;
+            summary += `   • Files attached: ${document.getElementById('monday-files').checked ? '✅ Yes' : '❌ No'}\n`;
+            summary += `   • Comments added: ${document.getElementById('monday-comments').checked ? '✅ Yes' : '❌ No'}\n\n`;
+
+            // Post-maintenance checks
+            summary += `🔍 POST-MAINTENANCE VERIFICATION:\n`;
+            summary += `   • Homepage functional: ${document.getElementById('homepage-loads').checked ? '✅ Yes' : '❌ No'}\n`;
+            summary += `   • Key pages tested: ${document.getElementById('key-pages').checked ? '✅ Yes' : '❌ No'}\n`;
+            summary += `   • Contact forms working: ${document.getElementById('contact-forms').checked ? '✅ Yes' : '❌ No'}\n`;
+            summary += `   • Mobile responsive: ${document.getElementById('mobile-responsive').checked ? '✅ Yes' : '❌ No'}\n`;
+            summary += `   • No broken links: ${document.getElementById('no-broken-links').checked ? '✅ Yes' : '❌ No'}\n\n`;
+
+            // Security
+            summary += `🔒 SECURITY CHECKS:\n`;
+            summary += `   • Security plugin installed: ${document.getElementById('security-plugin').checked ? '✅ Yes' : '❌ No'}\n\n`;
+
+            // Notes
+            const notes = document.querySelector('textarea').value;
+            if (notes.trim()) {
+                summary += `📝 ADDITIONAL NOTES:\n${notes}\n\n`;
+            }
+
+            // Highlight any issues
+            const issues = [];
+            if (!document.getElementById('backup-created').checked) issues.push('❌ Backup not created');
+            if (!document.getElementById('backup-integrity').checked) issues.push('❌ Backup integrity not verified');
+            if (issuePlugins.length > 0) issues.push(`⚠️  ${issuePlugins.length} plugins failed to update`);
+            if (!document.getElementById('security-plugin').checked) issues.push('❌ Security plugin not installed');
+            
+            if (issues.length > 0) {
+                summary += `🚨 ISSUES REQUIRING ATTENTION:\n`;
+                issues.forEach(issue => summary += `   ${issue}\n`);
+                summary += `\n`;
+            }
+
+            summary += `${'='.repeat(50)}\n`;
+            summary += `This automated report was generated by the Web Maintenance Checklist system.\n`;
+            summary += `For questions, contact ${specialist}.`;
+
+            return summary;
+        }
 
         // Function to add new rows for successful plugins
         function addSuccessRow() {
@@ -424,9 +629,9 @@
         // Initial count calculation
         setTimeout(updatePluginCount, 100);
 
-        // Export functions
+        // Export functions (existing)
         function exportToPDF() {
-            window.print(); // This will open print dialog where user can save as PDF
+            window.print();
             alert('💡 TIP: In the print dialog, select "Save as PDF" as your destination to create a PDF file.');
         }
 
@@ -442,7 +647,6 @@
             navigator.clipboard.writeText(summary).then(() => {
                 alert('✅ Checklist summary copied to clipboard! You can now paste it into an email, document, or messaging app.');
             }).catch(() => {
-                // Fallback for older browsers
                 const textArea = document.createElement('textarea');
                 textArea.value = summary;
                 document.body.appendChild(textArea);
