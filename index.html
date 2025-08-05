@@ -158,8 +158,13 @@
                 <input type="date" id="date">
             </div>
             <div class="info-item">
-                <label>Technician:</label>
-                <input type="text" placeholder="Enter technician name">
+                <label>Specialist:</label>
+                <select id="specialist">
+                    <option value="">Select specialist</option>
+                    <option value="Jason">Jason</option>
+                    <option value="Ashlin">Ashlin</option>
+                    <option value="Luke">Luke</option>
+                </select>
             </div>
             <div class="info-item">
                 <label>Website(s):</label>
@@ -371,7 +376,12 @@
         <div class="signature-section">
             <div class="info-item">
                 <label>Completed by:</label>
-                <input type="text" placeholder="Technician name" id="completed-by">
+                <select id="completed-by">
+                    <option value="">Select specialist</option>
+                    <option value="Jason">Jason</option>
+                    <option value="Ashlin">Ashlin</option>
+                    <option value="Luke">Luke</option>
+                </select>
             </div>
             <div class="info-item">
                 <label>Date completed:</label>
@@ -380,9 +390,9 @@
             <div class="info-item">
                 <label>Supervisor review:</label>
                 <select id="supervisor-review">
-                    <option>Select status</option>
-                    <option>Approved</option>
-                    <option>Needs revision</option>
+                    <option value="To be reviewed" selected>To be reviewed</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Needs revision">Needs revision</option>
                 </select>
             </div>
         </div>
@@ -483,13 +493,13 @@
 
         function generateSummary() {
             const date = document.querySelector('input[type="date"]').value || 'Not specified';
-            const technician = document.querySelector('input[placeholder="Enter technician name"]').value || 'Not specified';
+            const specialist = document.getElementById('specialist').value || 'Not specified';
             const website = document.querySelector('input[placeholder="Enter website URL(s)"]').value || 'Not specified';
             
             let summary = `WEB MAINTENANCE CHECKLIST SUMMARY\n`;
             summary += `==========================================\n`;
             summary += `Date: ${date}\n`;
-            summary += `Technician: ${technician}\n`;
+            summary += `Specialist: ${specialist}\n`;
             summary += `Website(s): ${website}\n\n`;
 
             // Count completed tasks
