@@ -244,7 +244,10 @@
             <div class="section-header">3. PLUGIN MANAGEMENT</div>
             <div class="section-content">
                 <h4>Plugins Successfully Updated:</h4>
-                <table class="plugin-table">
+                <div style="margin-bottom: 10px;">
+                    <button type="button" onclick="addSuccessRow()" style="background-color: #28a745; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer;">+ Add Plugin Row</button>
+                </div>
+                <table class="plugin-table" id="success-table">
                     <thead>
                         <tr>
                             <th>Plugin Name</th>
@@ -254,28 +257,31 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td><input type="text" placeholder="Plugin name"></td><td><input type="text" placeholder="x.x.x"></td><td><input type="text" placeholder="x.x.x"></td><td class="status-success">✅ Success</td></tr>
-                        <tr><td><input type="text" placeholder="Plugin name"></td><td><input type="text" placeholder="x.x.x"></td><td><input type="text" placeholder="x.x.x"></td><td class="status-success">✅ Success</td></tr>
-                        <tr><td><input type="text" placeholder="Plugin name"></td><td><input type="text" placeholder="x.x.x"></td><td><input type="text" placeholder="x.x.x"></td><td class="status-success">✅ Success</td></tr>
-                        <tr><td><input type="text" placeholder="Plugin name"></td><td><input type="text" placeholder="x.x.x"></td><td><input type="text" placeholder="x.x.x"></td><td class="status-success">✅ Success</td></tr>
-                        <tr><td><input type="text" placeholder="Plugin name"></td><td><input type="text" placeholder="x.x.x"></td><td><input type="text" placeholder="x.x.x"></td><td class="status-success">✅ Success</td></tr>
+                        <tr><td><input type="text" placeholder="Plugin name" onchange="updatePluginCount()"></td><td><input type="text" placeholder="x.x.x"></td><td><input type="text" placeholder="x.x.x"></td><td class="status-success">✅ Success</td></tr>
+                        <tr><td><input type="text" placeholder="Plugin name" onchange="updatePluginCount()"></td><td><input type="text" placeholder="x.x.x"></td><td><input type="text" placeholder="x.x.x"></td><td class="status-success">✅ Success</td></tr>
+                        <tr><td><input type="text" placeholder="Plugin name" onchange="updatePluginCount()"></td><td><input type="text" placeholder="x.x.x"></td><td><input type="text" placeholder="x.x.x"></td><td class="status-success">✅ Success</td></tr>
+                        <tr><td><input type="text" placeholder="Plugin name" onchange="updatePluginCount()"></td><td><input type="text" placeholder="x.x.x"></td><td><input type="text" placeholder="x.x.x"></td><td class="status-success">✅ Success</td></tr>
+                        <tr><td><input type="text" placeholder="Plugin name" onchange="updatePluginCount()"></td><td><input type="text" placeholder="x.x.x"></td><td><input type="text" placeholder="x.x.x"></td><td class="status-success">✅ Success</td></tr>
                     </tbody>
                 </table>
 
-                <h4>Plugins NOT Updated (Issues/Exceptions):</h4>
-                <table class="plugin-table">
+                <h4>Update Status - Unsuccessful:</h4>
+                <div style="margin-bottom: 10px;">
+                    <button type="button" onclick="addFailureRow()" style="background-color: #dc3545; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer;">+ Add Plugin Row</button>
+                </div>
+                <table class="plugin-table" id="failure-table">
                     <thead>
                         <tr>
                             <th>Plugin Name</th>
                             <th>Current Version</th>
                             <th>Reason Not Updated</th>
-                            <th>Action Required</th>
+                            <th>Unsuccessful</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td><input type="text" placeholder="Plugin name"></td><td><input type="text" placeholder="x.x.x"></td><td><input type="text" placeholder="Reason"></td><td><input type="text" placeholder="Next steps"></td></tr>
-                        <tr><td><input type="text" placeholder="Plugin name"></td><td><input type="text" placeholder="x.x.x"></td><td><input type="text" placeholder="Reason"></td><td><input type="text" placeholder="Next steps"></td></tr>
-                        <tr><td><input type="text" placeholder="Plugin name"></td><td><input type="text" placeholder="x.x.x"></td><td><input type="text" placeholder="Reason"></td><td><input type="text" placeholder="Next steps"></td></tr>
+                        <tr><td><input type="text" placeholder="Plugin name"></td><td><input type="text" placeholder="x.x.x"></td><td><input type="text" placeholder="Reason"></td><td class="status-issue">❌ Failed</td></tr>
+                        <tr><td><input type="text" placeholder="Plugin name"></td><td><input type="text" placeholder="x.x.x"></td><td><input type="text" placeholder="Reason"></td><td class="status-issue">❌ Failed</td></tr>
+                        <tr><td><input type="text" placeholder="Plugin name"></td><td><input type="text" placeholder="x.x.x"></td><td><input type="text" placeholder="Reason"></td><td class="status-issue">❌ Failed</td></tr>
                     </tbody>
                 </table>
                 
@@ -296,16 +302,8 @@
                     <label>Required files attached on Monday</label>
                 </div>
                 <div class="checkbox-item">
-                    <label>Files attached:</label>
-                    <input type="text" placeholder="List attached files">
-                </div>
-                <div class="checkbox-item">
                     <input type="checkbox" id="monday-comments">
                     <label>Comments added to Monday task</label>
-                </div>
-                <div class="checkbox-item">
-                    <label>Comments:</label>
-                    <input type="text" placeholder="Comment details">
                 </div>
             </div>
         </div>
@@ -345,23 +343,11 @@
         </div>
 
         <div class="section">
-            <div class="section-header">6. SECURITY & PERFORMANCE</div>
+            <div class="section-header">6. SECURITY</div>
             <div class="section-content">
                 <div class="checkbox-item">
-                    <input type="checkbox" id="malware-scan">
-                    <label>Malware scan completed - Clean</label>
-                </div>
-                <div class="checkbox-item">
                     <input type="checkbox" id="security-plugin">
-                    <label>Security plugin active</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="ssl-valid">
-                    <label>SSL certificate valid</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="login-monitoring">
-                    <label>Login attempts monitored</label>
+                    <label>Security plugin installed</label>
                 </div>
             </div>
         </div>
@@ -371,27 +357,8 @@
             <div class="section-content">
                 <div class="checkbox-item">
                     <label>Total plugins updated:</label>
-                    <input type="number" min="0" style="width: 80px;">
-                </div>
-                <div class="checkbox-item">
-                    <label>Time spent on maintenance:</label>
-                    <input type="text" placeholder="e.g., 2.5 hours">
-                </div>
-                <div class="checkbox-item">
-                    <label>Next scheduled maintenance:</label>
-                    <input type="date">
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="backup-screenshot">
-                    <label>Backup verification screenshot attached</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="whm-report-attached">
-                    <label>WHM report attached</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="plugin-log">
-                    <label>Plugin update log attached</label>
+                    <input type="number" id="total-plugins" min="0" style="width: 80px;" readonly>
+                    <span style="margin-left: 10px; font-style: italic; color: #666;">(Auto-calculated)</span>
                 </div>
             </div>
         </div>
@@ -442,6 +409,48 @@
                 }
             });
         });
+
+        // Function to add new rows for successful plugins
+        function addSuccessRow() {
+            const table = document.getElementById('success-table').getElementsByTagName('tbody')[0];
+            const newRow = table.insertRow();
+            newRow.innerHTML = `
+                <td><input type="text" placeholder="Plugin name" onchange="updatePluginCount()"></td>
+                <td><input type="text" placeholder="x.x.x"></td>
+                <td><input type="text" placeholder="x.x.x"></td>
+                <td class="status-success">✅ Success</td>
+            `;
+        }
+
+        // Function to add new rows for failed plugins
+        function addFailureRow() {
+            const table = document.getElementById('failure-table').getElementsByTagName('tbody')[0];
+            const newRow = table.insertRow();
+            newRow.innerHTML = `
+                <td><input type="text" placeholder="Plugin name"></td>
+                <td><input type="text" placeholder="x.x.x"></td>
+                <td><input type="text" placeholder="Reason"></td>
+                <td class="status-issue">❌ Failed</td>
+            `;
+        }
+
+        // Function to automatically count plugins
+        function updatePluginCount() {
+            const successTable = document.getElementById('success-table');
+            const pluginNameInputs = successTable.querySelectorAll('tbody td:first-child input[type="text"]');
+            let count = 0;
+            
+            pluginNameInputs.forEach(input => {
+                if (input.value.trim() !== '') {
+                    count++;
+                }
+            });
+            
+            document.getElementById('total-plugins').value = count;
+        }
+
+        // Initial count calculation
+        setTimeout(updatePluginCount, 100);
 
         // Export functions
         function exportToPDF() {
@@ -501,29 +510,35 @@
             summary += `- Report attached: ${document.getElementById('whm-attached').checked ? '✅ Yes' : '❌ No'}\n\n`;
 
             // Plugin updates
-            const pluginInputs = document.querySelectorAll('.plugin-table input[type="text"]');
+            const successTable = document.getElementById('success-table');
+            const failureTable = document.getElementById('failure-table');
+            
             let updatedPlugins = [];
             let issuePlugins = [];
             
-            // Get successful updates (first table)
-            for (let i = 0; i < Math.min(20, pluginInputs.length); i += 4) {
-                const pluginName = pluginInputs[i].value;
-                const prevVersion = pluginInputs[i + 1].value;
-                const newVersion = pluginInputs[i + 2].value;
-                if (pluginName.trim()) {
+            // Get successful updates
+            const successRows = successTable.querySelectorAll('tbody tr');
+            successRows.forEach(row => {
+                const inputs = row.querySelectorAll('input[type="text"]');
+                const pluginName = inputs[0].value.trim();
+                const prevVersion = inputs[1].value.trim();
+                const newVersion = inputs[2].value.trim();
+                if (pluginName) {
                     updatedPlugins.push(`${pluginName} (${prevVersion} → ${newVersion})`);
                 }
-            }
+            });
             
-            // Get issue plugins (second table)
-            for (let i = 20; i < pluginInputs.length; i += 4) {
-                const pluginName = pluginInputs[i].value;
-                const currentVersion = pluginInputs[i + 1].value;
-                const reason = pluginInputs[i + 2].value;
-                if (pluginName.trim()) {
+            // Get failed updates
+            const failureRows = failureTable.querySelectorAll('tbody tr');
+            failureRows.forEach(row => {
+                const inputs = row.querySelectorAll('input[type="text"]');
+                const pluginName = inputs[0].value.trim();
+                const currentVersion = inputs[1].value.trim();
+                const reason = inputs[2].value.trim();
+                if (pluginName) {
                     issuePlugins.push(`${pluginName} (${currentVersion}) - ${reason}`);
                 }
-            }
+            });
 
             summary += `PLUGIN UPDATES:\n`;
             summary += `- Successfully updated: ${updatedPlugins.length}\n`;
@@ -550,8 +565,7 @@
 
             // Security
             summary += `SECURITY CHECKS:\n`;
-            summary += `- Malware scan clean: ${document.getElementById('malware-scan').checked ? '✅ Yes' : '❌ No'}\n`;
-            summary += `- SSL certificate valid: ${document.getElementById('ssl-valid').checked ? '✅ Yes' : '❌ No'}\n\n`;
+            summary += `- Security plugin installed: ${document.getElementById('security-plugin').checked ? '✅ Yes' : '❌ No'}\n\n`;
 
             // Notes
             const notes = document.querySelector('textarea').value;
