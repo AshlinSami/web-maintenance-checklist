@@ -477,10 +477,10 @@
             
             let summary = `WEB MAINTENANCE CHECKLIST - COMPLETED\n`;
             summary += `${'='.repeat(50)}\n\n`;
-            summary += `📅 Date: ${date}\n`;
-            summary += `👤 Specialist: ${specialist}\n`;
-            summary += `🌐 Website(s): ${website}\n`;
-            summary += `⏰ Submitted: ${new Date().toLocaleString()}\n\n`;
+            summary += `Date: ${date}\n`;
+            summary += `Specialist: ${specialist}\n`;
+            summary += `Website(s): ${website}\n`;
+            summary += `Submitted: ${new Date().toLocaleString()}\n\n`;
 
             // Count completed tasks
             const checkboxes = document.querySelectorAll('input[type="checkbox"]');
@@ -488,15 +488,15 @@
             const completedTasks = Array.from(checkboxes).filter(cb => cb.checked).length;
             const completionPercent = Math.round(completedTasks/totalTasks*100);
             
-            summary += `📊 COMPLETION STATUS: ${completedTasks}/${totalTasks} tasks completed (${completionPercent}%)\n`;
+            summary += `COMPLETION STATUS: ${completedTasks}/${totalTasks} tasks completed (${completionPercent}%)\n`;
             if (completionPercent === 100) {
                 summary += `✅ ALL TASKS COMPLETED SUCCESSFULLY!\n\n`;
             } else {
-                summary += `⚠️  ATTENTION: ${totalTasks - completedTasks} tasks incomplete\n\n`;
+                summary += `ATTENTION: ${totalTasks - completedTasks} tasks incomplete\n\n`;
             }
 
             // Backup section
-            summary += `💾 BACKUP VERIFICATION:\n`;
+            summary += `BACKUP VERIFICATION:\n`;
             summary += `   • Backup created: ${document.getElementById('backup-created').checked ? '✅ Yes' : '❌ No'}\n`;
             summary += `   • Integrity verified: ${document.getElementById('backup-integrity').checked ? '✅ Yes' : '❌ No'}\n\n`;
 
@@ -531,7 +531,7 @@
                 }
             });
 
-            summary += `🔌 PLUGIN UPDATES:\n`;
+            summary += `PLUGIN UPDATES:\n`;
             summary += `   • Successfully updated: ${updatedPlugins.length}\n`;
             if (updatedPlugins.length > 0) {
                 updatedPlugins.forEach(plugin => summary += `     - ${plugin}\n`);
@@ -543,13 +543,13 @@
             summary += `\n`;
 
             // Monday tasks
-            summary += `📋 MONDAY TASK VERIFICATION:\n`;
+            summary += `MONDAY TASK VERIFICATION:\n`;
             summary += `   • Time logged: ${document.getElementById('monday-time').checked ? '✅ Yes' : '❌ No'}\n`;
             summary += `   • Files attached: ${document.getElementById('monday-files').checked ? '✅ Yes' : '❌ No'}\n`;
             summary += `   • Comments added: ${document.getElementById('monday-comments').checked ? '✅ Yes' : '❌ No'}\n\n`;
 
             // Post-maintenance checks
-            summary += `🔍 POST-MAINTENANCE VERIFICATION:\n`;
+            summary += `POST-MAINTENANCE VERIFICATION:\n`;
             summary += `   • Homepage functional: ${document.getElementById('homepage-loads').checked ? '✅ Yes' : '❌ No'}\n`;
             summary += `   • Key pages tested: ${document.getElementById('key-pages').checked ? '✅ Yes' : '❌ No'}\n`;
             summary += `   • Contact forms working: ${document.getElementById('contact-forms').checked ? '✅ Yes' : '❌ No'}\n`;
@@ -557,24 +557,24 @@
             summary += `   • No broken links: ${document.getElementById('no-broken-links').checked ? '✅ Yes' : '❌ No'}\n\n`;
 
             // Security
-            summary += `🔒 SECURITY CHECKS:\n`;
+            summary += `SECURITY CHECKS:\n`;
             summary += `   • Security plugin installed: ${document.getElementById('security-plugin').checked ? '✅ Yes' : '❌ No'}\n\n`;
 
             // Notes
             const notes = document.querySelector('textarea').value;
             if (notes.trim()) {
-                summary += `📝 ADDITIONAL NOTES:\n${notes}\n\n`;
+                summary += `ADDITIONAL NOTES:\n${notes}\n\n`;
             }
 
             // Highlight any issues
             const issues = [];
             if (!document.getElementById('backup-created').checked) issues.push('❌ Backup not created');
             if (!document.getElementById('backup-integrity').checked) issues.push('❌ Backup integrity not verified');
-            if (issuePlugins.length > 0) issues.push(`⚠️  ${issuePlugins.length} plugins failed to update`);
+            if (issuePlugins.length > 0) issues.push(`WARNING: ${issuePlugins.length} plugins failed to update`);
             if (!document.getElementById('security-plugin').checked) issues.push('❌ Security plugin not installed');
             
             if (issues.length > 0) {
-                summary += `🚨 ISSUES REQUIRING ATTENTION:\n`;
+                summary += `ISSUES REQUIRING ATTENTION:\n`;
                 issues.forEach(issue => summary += `   ${issue}\n`);
                 summary += `\n`;
             }
