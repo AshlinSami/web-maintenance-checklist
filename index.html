@@ -362,13 +362,10 @@
 
         <div style="text-align: center; margin: 30px 0; padding: 20px; background-color: #f8f9fa; border-radius: 8px;">
             <h3 style="color: #2c5aa0; margin-bottom: 20px;">📄 SUBMIT COMPLETED CHECKLIST</h3>
-            <button onclick="submitToManagement()" style="background-color: #28a745; color: white; padding: 15px 30px; border: none; border-radius: 5px; margin: 5px; cursor: pointer; font-size: 18px; font-weight: bold;">📧 Submit to Management</button>
-            <br><br>
-            <p style="color: #666; font-size: 14px; margin-top: 10px;">This will automatically email the completed checklist to management</p>
-            <hr style="margin: 20px 0;">
-            <button onclick="exportToPDF()" style="background-color: #dc3545; color: white; padding: 12px 24px; border: none; border-radius: 5px; margin: 5px; cursor: pointer; font-size: 16px;">📋 Save as PDF</button>
-            <button onclick="exportToEmail()" style="background-color: #17a2b8; color: white; padding: 12px 24px; border: none; border-radius: 5px; margin: 5px; cursor: pointer; font-size: 16px;">📧 Manual Email</button>
-            <button onclick="copyToClipboard()" style="background-color: #6c757d; color: white; padding: 12px 24px; border: none; border-radius: 5px; margin: 5px; cursor: pointer; font-size: 16px;">📋 Copy Summary</button>
+            <button onclick="submitToManagement()" style="background-color: #28a745; color: white; padding: 15px 30px; border: none; border-radius: 5px; margin: 10px; cursor: pointer; font-size: 18px; font-weight: bold;">📧 Submit</button>
+            <button onclick="exportToPDF()" style="background-color: #dc3545; color: white; padding: 15px 30px; border: none; border-radius: 5px; margin: 10px; cursor: pointer; font-size: 18px; font-weight: bold;">📋 Save as PDF</button>
+            <br>
+            <p style="color: #666; font-size: 14px; margin-top: 15px;">Submit will automatically email the completed checklist to management</p>
         </div>
     </div>
 
@@ -459,7 +456,7 @@
                     submitBtn.innerHTML = '❌ Failed to Send';
                     submitBtn.style.backgroundColor = '#dc3545';
                     
-                    alert('❌ Failed to send email to management.\n\nError: ' + error.text + '\n\nPlease use the "Manual Email" option instead.');
+                    alert('❌ Failed to send email to management.\n\nError: ' + error.text + '\n\nPlease try again or save as PDF instead.');
                     
                     // Reset button after 3 seconds
                     setTimeout(() => {
@@ -633,28 +630,6 @@
         function exportToPDF() {
             window.print();
             alert('💡 TIP: In the print dialog, select "Save as PDF" as your destination to create a PDF file.');
-        }
-
-        function exportToEmail() {
-            const summary = generateSummary();
-            const subject = encodeURIComponent('Web Maintenance Checklist Completed - ' + new Date().toDateString());
-            const body = encodeURIComponent(summary);
-            window.location.href = `mailto:?subject=${subject}&body=${body}`;
-        }
-
-        function copyToClipboard() {
-            const summary = generateSummary();
-            navigator.clipboard.writeText(summary).then(() => {
-                alert('✅ Checklist summary copied to clipboard! You can now paste it into an email, document, or messaging app.');
-            }).catch(() => {
-                const textArea = document.createElement('textarea');
-                textArea.value = summary;
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textArea);
-                alert('✅ Checklist summary copied to clipboard!');
-            });
         }
 
         function generateSummary() {
