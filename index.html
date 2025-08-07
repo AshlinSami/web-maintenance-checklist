@@ -163,8 +163,26 @@
             /* Hide Monday Task Verification section for clients */
             .monday-tasks-internal { display: none !important; }
             
-            /* Hide any URLs or links */
+            /* Hide Completed by / Signature section for clients */
+            .signature-section { display: none !important; }
+            
+            /* Hide any URLs or links including GitHub form link */
             a[href]:after { content: none !important; }
+            a { display: none !important; }
+            
+            /* Hide page URLs that browsers add */
+            @page {
+                margin: 1in;
+                @bottom-center {
+                    content: none;
+                }
+                @bottom-left {
+                    content: none;
+                }
+                @bottom-right {
+                    content: none;
+                }
+            }
             
             /* Professional page formatting */
             .header {
@@ -239,14 +257,6 @@
                 font-family: inherit;
             }
             
-            /* Signature section */
-            .signature-section {
-                page-break-inside: avoid;
-                border: 1px solid #ddd;
-                padding: 15px;
-                margin-top: 20px;
-            }
-            
             /* Page breaks */
             .page-break { page-break-before: always; }
             
@@ -254,6 +264,14 @@
             * {
                 -webkit-print-color-adjust: exact !important;
                 color-adjust: exact !important;
+            }
+            
+            /* Hide any footer content that might contain links */
+            footer, .footer { display: none !important; }
+            
+            /* Remove any auto-generated content */
+            *:after, *:before {
+                content: none !important;
             }
         }
     </style>
