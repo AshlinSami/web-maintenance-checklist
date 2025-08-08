@@ -503,10 +503,85 @@
         const EMAILJS_TEMPLATE_ID = 'template_eb9d8b7';
         const MANAGEMENT_EMAIL = 'ashlin@algorithm.agency';
 
+        // CLIENT-SPECIFIC EMAIL ROUTING CONFIGURATION
+        const CLIENT_ROUTING = {
+            // Add your client websites here with their specific managers and CC lists
+            'example-client1.com': {
+                manager: 'manager1@algorithm.agency',
+                cc: ['support1@algorithm.agency'],
+                priority: 'high'
+            },
+            'example-client2.com': {
+                manager: 'manager2@algorithm.agency',
+                cc: ['support2@algorithm.agency', 'sales@algorithm.agency'],
+                priority: 'medium'
+            },
+            'example-client3.com': {
+                manager: 'manager3@algorithm.agency',
+                cc: ['support3@algorithm.agency'],
+                priority: 'standard'
+            }
+            // Add more clients as needed
+        };
+
+        // GOOGLE SHEETS ANALYTICS CONFIGURATION
+        const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzhvS621Ipue98_MnpYoJXWEGV8S-IGf7VtrurOwsrfpvnx7twpHupZgqn_22BEW78QdQ/exec';
+
         // Initialize EmailJS
         (function() {
             emailjs.init(EMAILJS_PUBLIC_KEY);
         })();
+
+        // Function to detect client from website URL
+        function getClientRouting(websiteUrl) {
+            if (!websiteUrl) return null;
+            
+            // Clean the URL to get just the domain
+            const cleanUrl = websiteUrl.toLowerCase()
+                .replace(/^https?:\/\//, '')
+                .replace(/^www\./, '')
+                .split('/')[0];
+            
+            // Check if we have routing for this client
+            for (const [clientDomain, routing] of Object.entries(CLIENT_ROUTING)) {
+                if (cleanUrl.includes(clientDomain.toLowerCase())) {
+                    return routing;
+                }
+            }
+            
+            // Default routing if client not found
+            return {
+                manager: MANAGEMENT_EMAIL,
+                cc: [],
+                priority: 'standard'
+            };
+        }
+
+        // Function to log data to Google Sheets for analytics
+        async function logToAnalytics(formData) {
+            if (!GOOGLE_SHEETS_URL || GOOGLE_SHEETS_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+                console.log('Google Sheets analytics not configured yet');
+                return;
+            }
+
+            try {
+                const response = await fetch(GOOGLE_SHEETS_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                if (response.ok) {
+                    console.log('Data logged to analytics successfully');
+                } else {
+                    console.error('Failed to log to analytics');
+                }
+            } catch (error) {
+                console.error('Analytics logging error:', error);
+            }
+        }
 
         // Set today's date as default
         document.getElementById('date').valueAsDate = new Date();
@@ -522,8 +597,8 @@
             });
         });
 
-        // Main function to submit to management via EmailJS
-        function submitToManagement() {
+        // Main function to submit to management via EmailJS with client routing
+        async function submitToManagement() {
             // Validate required fields
             const specialist = document.getElementById('specialist').value;
             const website = document.querySelector('input[placeholder="Enter website URL(s)"]').value;
@@ -544,15 +619,34 @@
             submitBtn.innerHTML = '📤 Sending...';
             submitBtn.disabled = true;
 
+            // Get client-specific routing
+            const clientRouting = getClientRouting(website);
+            
             // Generate detailed summary for management
             const emailContent = generateManagementSummary();
             
-            // Prepare email parameters
+            // Collect analytics data
+            const analyticsData = generateAnalyticsData();
+            
+            // Prepare email parameters with client routing
             const templateParams = {
                 name: specialist,
                 time: new Date().toLocaleString(),
                 message: emailContent
             };
+
+            // Determine recipients based on client routing
+            let recipients = [clientRouting.manager];
+            if (clientRouting.cc && clientRouting.cc.length > 0) {
+                recipients = recipients.concat(clientRouting.cc);
+            }
+
+            // Log to analytics first
+            try {
+                await logToAnalytics(analyticsData);
+            } catch (error) {
+                console.error('Analytics logging failed:', error);
+            }
 
             // Send email via EmailJS
             emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
@@ -563,11 +657,18 @@
                     document.getElementById('completed-by').value = specialist;
                     document.getElementById('date-completed').valueAsDate = new Date();
                     
-                    // Success notification
+                    // Success notification with client info
                     submitBtn.innerHTML = '✅ Sent Successfully!';
                     submitBtn.style.backgroundColor = '#28a745';
                     
-                    alert('✅ Checklist successfully submitted to management!\n\n📧 Email sent to: ' + MANAGEMENT_EMAIL);
+                    const clientInfo = clientRouting.manager !== MANAGEMENT_EMAIL 
+                        ? `\n📧 Sent to: ${clientRouting.manager}\n📋 CC'd: ${clientRouting.cc.join(', ')}`
+                        : `\n📧 Sent to: ${MANAGEMENT_EMAIL}`;
+                    
+                    alert('✅ Checklist successfully submitted!\n\n' + 
+                          `🎯 Priority: ${clientRouting.priority.toUpperCase()}` + 
+                          clientInfo +
+                          '\n📊 Data logged to analytics dashboard');
                     
                     // Reset button after 3 seconds
                     setTimeout(() => {
@@ -583,7 +684,7 @@
                     submitBtn.innerHTML = '❌ Failed to Send';
                     submitBtn.style.backgroundColor = '#dc3545';
                     
-                    alert('❌ Failed to send email to management.\n\nError: ' + error.text + '\n\nPlease try again or save as PDF instead.');
+                    alert('❌ Failed to send email.\n\nError: ' + error.text + '\n\nPlease try again or save as PDF instead.');
                     
                     // Reset button after 3 seconds
                     setTimeout(() => {
@@ -592,6 +693,78 @@
                         submitBtn.disabled = false;
                     }, 3000);
                 });
+        }
+
+        // Generate analytics data for dashboard
+        function generateAnalyticsData() {
+            const date = document.querySelector('input[type="date"]').value || new Date().toISOString().split('T')[0];
+            const specialist = document.getElementById('specialist').value || 'Not specified';
+            const website = document.querySelector('input[placeholder="Enter website URL(s)"]').value || 'Not specified';
+            
+            // Count completed tasks
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const totalTasks = checkboxes.length;
+            const completedTasks = Array.from(checkboxes).filter(cb => cb.checked).length;
+            const completionPercent = Math.round(completedTasks/totalTasks*100);
+            
+            // Count plugins
+            const successTable = document.getElementById('success-table');
+            const failureTable = document.getElementById('failure-table');
+            
+            let updatedPlugins = 0;
+            let failedPlugins = 0;
+            
+            // Count successful updates
+            const successRows = successTable.querySelectorAll('tbody tr');
+            successRows.forEach(row => {
+                const inputs = row.querySelectorAll('input[type="text"]');
+                const pluginName = inputs[0].value.trim();
+                if (pluginName) updatedPlugins++;
+            });
+            
+            // Count failed updates
+            const failureRows = failureTable.querySelectorAll('tbody tr');
+            failureRows.forEach(row => {
+                const inputs = row.querySelectorAll('input[type="text"]');
+                const pluginName = inputs[0].value.trim();
+                if (pluginName) failedPlugins++;
+            });
+
+            // Get client routing info
+            const clientRouting = getClientRouting(website);
+            
+            // Check for critical issues
+            const criticalIssues = [];
+            if (!document.getElementById('backup-created').checked) criticalIssues.push('No Backup');
+            if (!document.getElementById('backup-integrity').checked) criticalIssues.push('Backup Not Verified');
+            if (!document.getElementById('security-plugin').checked) criticalIssues.push('No Security Plugin');
+            if (failedPlugins > 0) criticalIssues.push(`${failedPlugins} Plugin Failures`);
+            
+            return {
+                timestamp: new Date().toISOString(),
+                date: date,
+                specialist: specialist,
+                website: website,
+                clientManager: clientRouting.manager,
+                clientPriority: clientRouting.priority,
+                completionPercent: completionPercent,
+                totalTasks: totalTasks,
+                completedTasks: completedTasks,
+                pluginsUpdated: updatedPlugins,
+                pluginsFailed: failedPlugins,
+                backupCreated: document.getElementById('backup-created').checked,
+                backupVerified: document.getElementById('backup-integrity').checked,
+                securityPlugin: document.getElementById('security-plugin').checked,
+                mondayTimeLogged: document.getElementById('monday-time').checked,
+                mondayFilesAttached: document.getElementById('monday-files').checked,
+                mondayCommentsAdded: document.getElementById('monday-comments').checked,
+                homepageFunctional: document.getElementById('homepage-loads').checked,
+                mobileResponsive: document.getElementById('mobile-responsive').checked,
+                noBrokenLinks: document.getElementById('no-broken-links').checked,
+                criticalIssues: criticalIssues.join(', '),
+                notes: document.querySelector('textarea').value || '',
+                submissionTime: new Date().toLocaleString()
+            };
         }
 
         // Generate comprehensive summary for management email
